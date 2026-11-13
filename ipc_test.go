@@ -1,4 +1,4 @@
-package ipc
+package critty
 
 import (
 	"context"

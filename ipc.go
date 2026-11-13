@@ -1,6 +1,6 @@
-// Package ipc is a client for the IPC socket of the Alacritty terminal
-// emulator and of critty, an Alacritty fork that adds remote control. It
-// speaks the protocol of "alacritty msg" and "critty msg".
+// Package critty is a client for the IPC socket of critty, a fork of the
+// Alacritty terminal emulator that adds remote control, and of Alacritty
+// itself. It speaks the protocol of "critty msg" and "alacritty msg".
 //
 // A [Client] addresses one process, whose ID [Client.PID] returns on Linux.
 // [RemoteControlSocket] gives the socket of a critty process started with
@@ -9,7 +9,7 @@
 // Only critty processes started with --remote-control accept
 // [Client.ReadScreen] and [Client.SendText]:
 //
-//	c := ipc.Client{Socket: ipc.RemoteControlSocket("build")}
+//	c := critty.Client{Socket: critty.RemoteControlSocket("build")}
 //	err := c.SendText(ctx, 0, "make test\r")
 //	screen, err := c.ReadScreen(ctx, 0)
 //
@@ -17,7 +17,7 @@
 //
 //	reply, err := c.Do(ctx, "ReadScreen", map[string]any{"window_id": nil})
 //	err = reply.Decode(&screen)
-package ipc
+package critty
 
 import (
 	"context"

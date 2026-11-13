@@ -9,10 +9,10 @@ go get github.com/go-pa/critty-ipc
 ```
 
 ```go
-import ipc "github.com/go-pa/critty-ipc"
+import critty "github.com/go-pa/critty-ipc"
 
 // Start the terminal with: critty --remote-control build
-c := ipc.Client{Socket: ipc.RemoteControlSocket("build")}
+c := critty.Client{Socket: critty.RemoteControlSocket("build")}
 err := c.SendText(ctx, 0, "make test\r")
 screen, err := c.ReadScreen(ctx, 0)
 pid, err := c.PID(ctx)

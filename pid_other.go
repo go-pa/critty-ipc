@@ -1,6 +1,6 @@
 //go:build !linux
 
-package ipc
+package critty
 
 import (
 	"context"
