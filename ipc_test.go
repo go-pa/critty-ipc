@@ -133,6 +133,30 @@ func TestReadScreenANSI(t *testing.T) {
 	}
 }
 
+func TestReadText(t *testing.T) {
+	tests := []struct {
+		opts ReadOptions
+		want string
+	}{
+		{ReadOptions{}, `{"ReadScreen":{"window_id":null}}`},
+		{ReadOptions{Lines: 500}, `{"ReadScreen":{"window_id":null,"lines":500}}`},
+		{ReadOptions{Lines: -1, ANSI: true}, `{"ReadScreen":{"window_id":null,"ansi":true,"all":true}}`},
+	}
+	for _, tt := range tests {
+		c, got := fakeServer(t, `{"ReadScreen":"299\n300"}`)
+		text, err := c.ReadText(t.Context(), 0, tt.opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if msg := <-got; msg != tt.want {
+			t.Errorf("ReadText(%+v) sent %s, want %s", tt.opts, msg, tt.want)
+		}
+		if text != "299\n300" {
+			t.Errorf("ReadText(%+v) = %q", tt.opts, text)
+		}
+	}
+}
+
 func TestGetConfig(t *testing.T) {
 	c, _ := fakeServer(t, `{"GetConfig":"{\"font\":{\"size\":12}}"}`, `{"ReadScreen":""}`)
 

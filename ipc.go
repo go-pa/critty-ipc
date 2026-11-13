@@ -174,6 +174,34 @@ func (c *Client) ReadScreenANSI(ctx context.Context, w Window) (string, error) {
 	return c.readScreen(ctx, readScreenArgs{Window: w, ANSI: true})
 }
 
+// ReadText is like [Client.ReadScreen] but reads the rows selected by opts,
+// which can include the scrollback history. The zero ReadOptions reads the
+// visible screen as plain text.
+func (c *Client) ReadText(ctx context.Context, w Window, opts ReadOptions) (string, error) {
+	args := readScreenArgs{Window: w, ANSI: opts.ANSI}
+	switch {
+	case opts.Lines < 0:
+		args.All = true
+	case opts.Lines > 0:
+		args.Lines = opts.Lines
+	}
+	return c.readScreen(ctx, args)
+}
+
+// ReadOptions selects the text returned by [Client.ReadText].
+type ReadOptions struct {
+	// Lines, if positive, reads the last Lines rows of the scrollback history
+	// and the screen instead of the visible rows; the rows end at the bottom
+	// of the screen, whatever the window's scroll position. A negative Lines
+	// reads all of the history and the screen. If zero, the visible rows are
+	// read.
+	Lines int
+
+	// ANSI, if true, includes colors and text attributes as ANSI SGR escape
+	// sequences, as [Client.ReadScreenANSI] does.
+	ANSI bool
+}
+
 func (c *Client) readScreen(ctx context.Context, args readScreenArgs) (string, error) {
 	var screen string
 	err := c.call(ctx, "ReadScreen", args, &screen)
@@ -334,6 +362,8 @@ type windowArgs struct {
 type readScreenArgs struct {
 	Window Window `json:"window_id"`
 	ANSI   bool   `json:"ansi,omitzero"`
+	Lines  int    `json:"lines,omitzero"`
+	All    bool   `json:"all,omitzero"`
 }
 
 type sendTextArgs struct {
